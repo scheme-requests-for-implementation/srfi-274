@@ -1,26 +1,26 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 (import (except (scheme base) list-copy list->string list->vector)
-        (srfi NNN base)
+        (srfi 274 base)
         (srfi 64))
 (cond-expand
   ((library (srfi 41))
-   (import (srfi NNN 41)
+   (import (srfi 274 41)
            (except (srfi 41) list->stream)))
   (else))
 (cond-expand
   ((library (srfi 134))
-   (import (srfi NNN 134)
+   (import (srfi 274 134)
            (except (srfi 134) list->ideque)))
   (else))
 (cond-expand
   ((library (srfi 158))
-   (import (srfi NNN 158)
+   (import (srfi 274 158)
            (except (srfi 158) list->generator)))
   (else))
 (cond-expand
   ((library (srfi 160 base))
-   (import (srfi NNN 160 base)
+   (import (srfi 274 160 base)
            (except (srfi 160 base)
                    list->s8vector
                    list->u8vector
@@ -36,7 +36,7 @@
                    list->c128vector)))
   (else))
 
-(test-begin "srfi NNN")
+(test-begin "srfi 274")
 
 (define clist '#1= (1 2 . #1#))
 

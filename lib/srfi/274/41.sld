@@ -1,8 +1,8 @@
 ;;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;;; SPDX-License-Identifier: MIT
-(define-library (srfi NNN 41)
+(define-library (srfi 274 41)
   (import (scheme base) (scheme case-lambda)
-          (srfi NNN internal)
+          (srfi 274 internal)
           (except (srfi 41) list->stream)
           (prefix (only (srfi 41) list->stream) srfi-41:))
   (export list->stream)

@@ -1,10 +1,10 @@
 ;;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;;; SPDX-License-Identifier: MIT
-(define-library (srfi NNN base)
+(define-library (srfi 274 base)
   (import (except (scheme base)
                   list-copy list->string list->vector)
           (scheme case-lambda)
-          (srfi NNN internal)
+          (srfi 274 internal)
           (prefix (only (scheme base)
                         list-copy list->string list->vector)
                   r7rs:))

@@ -1,8 +1,8 @@
 ;;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;;; SPDX-License-Identifier: MIT
-(define-library (srfi NNN 134)
+(define-library (srfi 274 134)
   (import (scheme base) (scheme case-lambda)
-          (srfi NNN internal)
+          (srfi 274 internal)
           (except (srfi 134) list->ideque)
           (prefix (only (srfi 134) list->ideque) srfi-134:))
   (export list->ideque)

@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 -->
   <head>
     <meta charset="utf-8">
-    <title>SRFI ###: Extended List Conversion Procedures</title>
+    <title>SRFI 274: Extended List Conversion Procedures</title>
     <style>
             @media (prefers-color-scheme: light) {
               :root {
@@ -88,7 +88,7 @@ SPDX-License-Identifier: MIT
         ><img class="srfi-logo"
               src="https://srfi.schemers.org/srfi-logo.svg"
               alt="SRFI surfboard logo"
-        /></a>###: Extended List Conversion Procedures</h1>
+        /></a>274: Extended List Conversion Procedures</h1>
 
 <p>by Peter McGoron</p>
 
@@ -261,7 +261,7 @@ a chain of pairs beyond this length.
   to have the same implementation from procedures exported from both
   libraries: for example, <code>list-copy</code> from
   <code>(scheme base)</code> should be the same as the one exported
-  from <code>(srfi ### base)</code>.
+  from <code>(srfi 274 base)</code>.
 </p>
 
 <h3 id="editorial"><a href="#editorial">&para;</a> Editorial conventions</h3>
@@ -275,7 +275,7 @@ a chain of pairs beyond this length.
 <h3 id="procedures"><a href="#procedures">&para;</a> Procedures</h3>
 
 <div class="feature" id="list-copy">
-<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<span class="category">(scheme base)<br/>(srfi 274 base)<br />procedure</span>
 <code class="signature">(<a href="#list-copy">list-copy</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -329,7 +329,7 @@ a chain of pairs beyond this length.
 </pre>
 
 <div class="feature" id="list-to-string">
-<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<span class="category">(scheme base)<br/>(srfi 274 base)<br />procedure</span>
 <code class="signature">(<a href="#list-to-string">list->string</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -370,7 +370,7 @@ a chain of pairs beyond this length.
 </pre>
 
 <div class="feature" id="list-to-vector">
-<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<span class="category">(scheme base)<br/>(srfi 274 base)<br />procedure</span>
 <code class="signature">(<a href="#list-to-vector">list->vector</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -397,7 +397,7 @@ a chain of pairs beyond this length.
   These procedures are exported from SRFI libraries that are included
   in <span class="report-name">R<sup>7</sup>RS-Large</span>.
   If an implementation does not support a certain SRFI, then the
-  corresponding <code>(srfi ###)</code> sublibrary is not required.
+  corresponding <code>(srfi 274)</code> sublibrary is not required.
 </p>
 
 <p>
@@ -407,7 +407,7 @@ a chain of pairs beyond this length.
 </p>
 
 <div class="feature" id="list-to-stream">
-<span class="category">(srfi 41)<br/>(srfi ### 41)<br />procedure</span>
+<span class="category">(srfi 41)<br/>(srfi 274 41)<br />procedure</span>
 <code class="signature">(<a href="#list-to-stream">list->stream</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -416,7 +416,7 @@ a chain of pairs beyond this length.
 </div>
 
 <div class="feature" id="list-to-ideque">
-<span class="category">(srfi 134)<br/>(srfi ### 134)<br />procedure</span>
+<span class="category">(srfi 134)<br/>(srfi 274 134)<br />procedure</span>
 <code class="signature">(<a href="#list-to-ideque">list->ideque</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -425,7 +425,7 @@ a chain of pairs beyond this length.
 </div>
 
 <div class="feature" id="list-to-generator">
-<span class="category">(srfi 158)<br />(srfi ### 158)<br />procedure</span>
+<span class="category">(srfi 158)<br />(srfi 274 158)<br />procedure</span>
 <code class="signature">(<a href="list-to-generator">list->generator</a>
                          <var>im-list</var>
                          [<var>start</var>
@@ -437,8 +437,8 @@ a chain of pairs beyond this length.
 <span class="category">
 (srfi 160 ⟨<var>type</var>⟩)<br />
 (srfi 160 base)<br />
-(srfi ### 160 ⟨<var>type</var>⟩)<br />
-(srfi ### 160 base)
+(srfi 274 160 ⟨<var>type</var>⟩)<br />
+(srfi 274 160 base)
 <br />procedure</span>
 <code class="signature">(<a href="#list-to-number-vector">list->⟨<var>type</var>⟩vector</a>
                          <var>im-list</var>

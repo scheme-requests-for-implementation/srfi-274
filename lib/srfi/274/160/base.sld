@@ -1,8 +1,8 @@
 ;;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;;; SPDX-License-Identifier: MIT
-(define-library (srfi NNN 160 base)
+(define-library (srfi 274 160 base)
   (import (scheme base) (scheme case-lambda)
-          (srfi NNN internal)
+          (srfi 274 internal)
           (prefix (only (srfi 160 base)
                         list->s8vector
                         list->u8vector
