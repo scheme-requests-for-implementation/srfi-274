@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+SPDX-FileCopyrightText: 2026 Peter McGoron
+SPDX-License-Identifier: MIT
+-->
+  <head>
+    <meta charset="utf-8">
+    <title>SRFI ###: Extended List Conversion Procedures</title>
+    <style>
+            @media (prefers-color-scheme: light) {
+              :root {
+                --background-color: white;
+                --link-color: blue;
+                --text-color: black;
+                --visited-link-color: purple;
+              }
+              code {
+                  background-color: #dedede;
+              }
+            }
+
+            .feature {
+              overflow: hidden;
+            }
+
+            .category {
+              float: right;
+              font-family: monospace;
+              font-size: 12pt;
+            }
+
+            .example {
+              border: 1px solid;
+              padding-top: 6pt;
+              padding-bottom: 6pt;
+              padding-left: 6pt;
+              padding-right: 12pt;
+            }
+
+            .example-code {
+              background-color: var(--background-color);
+            }
+
+            @media (prefers-color-scheme: dark) {
+              :root {
+                --background-color: #161616;
+                --link-color: SkyBlue;
+                --text-color: #e0e0e0;
+                --visited-link-color: Orchid;
+              }
+              code {
+                background-color: #484848;
+              }
+            }
+            a {
+              color: var(--link-color);
+            }
+            a:visited {
+              color: var(--visited-link-color);
+            }
+            body {
+              background-color: var(--background-color);
+              color: var(--text-color);
+            }
+            .report-name {
+              font-style: italic;
+            }
+
+            .centered {
+             display: flex;
+             justify-content: center;
+            }
+            .evals-side {
+              float: right;
+            }
+
+            .evals-text {
+              font-family: serif;
+              font-style: italic;
+            }
+    </style>
+    <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
+    <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"></head>
+  <body>
+    <h1><a href="https://srfi.schemers.org/"
+        ><img class="srfi-logo"
+              src="https://srfi.schemers.org/srfi-logo.svg"
+              alt="SRFI surfboard logo"
+        /></a>###: Extended List Conversion Procedures</h1>
+
+<p>by Peter McGoron</p>
+
+<h2 id="status"><a href="#status">&para;</a> Status</h2>
+
+<p style="color: red;">For editor's use only.  Please do not edit this section.</p>
+
+<p>??? the draft/final/withdrawn status of the SRFI, information on how
+to subscribe to its mailing list, and important dates in its history.
+The editor will add this section.</p>
+
+<h2 id="abstract"><a href="#abstract">&para;</a> Abstract</h2>
+
+<p>
+  A set of modest extensions to list conversion and list copying procedures
+  is proposed that aligns them with other conversion and copying procedures
+  and allows for some operations on improper and circular lists.
+  Authors of further SRFIs that include list conversion procedures are
+  encouraged to align their behavior with the behavior in this SRFI.
+</p>
+
+<h2 id="rationale"><a href="#rationale">&para;</a> Rationale</h2>
+
+<p>
+  In the <span class="report-name">R<sup>7</sup>RS</span>, procedures
+  such as <code>vector-copy</code> and <code>string->list</code> received
+  optional <var>start</var> and <var>end</var> arguments. These arguments
+  allow one to copy segments of the string/vector without having to write
+  an explicit loop for it.
+</p>
+
+<p>
+  The procedures that operate on lists, such as <code>list-copy</code>
+  and <code>list->string</code>, do not have these extensions.
+  The <var>start</var> and <var>end</var> arguments are arguably more
+  useful for lists, because they allow for conversion of circular lists
+  to other data types without explicit loops or intermediate allocations.
+  But by allowing a selection of a portion of a list, the <var>start</var>
+  and <var>end</var> arguments run into specification issues when passed
+  dotted lists. How should they be handled?
+</p>
+
+<p>
+  Finite improper lists are an artefact of the representation of lists
+  as cons cells. They are odd corner cases that many procedures will
+  probably struggle with. But they have their uses, particularly for
+  lazy computation, such as
+  <a href="https://r7rs.org/large/fascicles/macro/1/syntax-objects.html#_entry_unwrap-syntax">hygienic context propagation</a>
+  and
+  <a href="https://srfi.schemers.org/srfi-127/">odd sequences</a>.
+</p>
+
+<p>
+  The common implementation of many procedures, such as
+  <code>list-ref</code>, <code>list-tail</code>, and <code>map</code>
+  (when operating on certain sets of multiple arguments),
+  work fine with improper lists. Critical here is that these procedures
+  only inspect a portion of a linked list: they don't care if list is
+  proper after those elements. An example of this behavior is the
+  “implementation responsibilities” section of many procedures in the
+  <span class="report-name">R<sup>6</sup>RS</span>, which include
+  statements like
+</p>
+
+<blockquote>
+The implementation must check that <var>list</var> is a chain of pairs
+whose length is at least <var>k</var>. It should not check that it is
+a chain of pairs beyond this length.
+</blockquote>
+
+<p>
+  This SRFI imposes a consistent method of dealing with improper lists
+  for copying and conversion procedures.
+  When <var>end</var> is supplied as an argument to a procedure,
+  <em>a dotted list is treated as if it was a proper list</em>: it
+  is treated as if its final cdr was the empty list, and not some non-list
+  object. This treatment does not extend to situations where <var>end</var>
+  is not supplied. For example:
+</p>
+
+<pre class="example">
+<code class="example-code">(list->vector '(1 2 3 4 5 . 6))</code> <span class="eval-side"> <span class="evals-side"> ⇒ <span class="evals-text">error</span></span>
+<code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2)</code> <span class="evals-side">⇒ <span class="evals-text">error</span></span>
+<code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
+<code class="example-code">(list->vector '(1 2 3 4 5) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
+</pre>
+
+<p>
+  This SRFI does not extend this behavior to all list procedures, only
+  the procedures where it makes sense to add an explicit <var>end</var> argument. With
+  the behavior described above, a simple higher-order procedure can convert
+  a one-argument list conversion procedure into the type described by this
+  SRFI:
+</p>
+
+<pre class="example">
+(define (convert proc)
+  (case-lambda
+    ((lst) (proc lst))
+    ((lst start) (proc (drop lst start)))
+    ((lst start end) (proc (take (drop lst start)
+                                 (- end start))))))
+</pre>
+
+<p>
+  where <code>drop</code> and <code>take</code> are from
+  <a href="https://srfi.schemers.org/srfi-1/">SRFI 1</a>.
+  Implementations are encouraged to implement these procedures without
+  the extra allocations entailed by <code>drop</code>.
+</p>
+
+<h2 id="specification"><a href="#specification">&para;</a> Specification</h2>
+
+<h3 id="improper-lists"><a href="#improper-lists">&para;</a> Improper lists</h3>
+
+<p>
+  An <dfn>improper list</dfn> is a sequence of zero or more cons cells
+  that do not end in an empty list.
+  The <dfn>elements of an improper list</dfn> are the cars of the
+  pairs of that sequence of cons cells.
+  The <dfn>length</dfn> of an improper list is the number of cons cells
+  before the final cdr. This number may be infinity. If the
+  final cdr of an improper list is replaced with the empty list,
+  then the length of the resulting proper list is equal to the length of
+  the improper list.
+</p>
+
+<p>
+  Any non-pair and non-null object is a zero-length improper list.
+  For clarity, the term <var>im-list</var> is used in argument lists
+  when an argument is a possibly improper list.
+</p>
+
+<h3 id="start-and-end-arguments"><a href="#start-and-end-arguments"
+    >&para;</a>
+    The <var>start</var> and <var>end</var> arguments
+</h3>
+
+<p>
+  The procedures in this SRFI all take optional <var>start</var> and
+  <var>end</var> arguments. For each procedure taking an argument
+  <var>im-list</var>, it is an error if <var>start</var> and
+  <var>end</var> are not exact integers, and it is an error if the
+  following formula is not satisfied:
+</p>
+
+<p class="centered">
+0 ≤ <var>start</var> ≤ <var>end</var> ≤ <var>length</var>
+</p>
+
+<p>where <var>length</var> is the length of <var>im-list</var>.</p>
+
+<p>
+  The index <var>start</var> is always inclusive and the index
+  <var>end</var> is always exclusive.
+</p>
+
+<p>
+  Unless otherwise specified, it is an error to pass an improper
+  list to a procedure without an explicit <var>end</var> argument.
+  (In this SRFI, the only exception is <code>list-copy</code>.)
+</p>
+
+<h3 id="libraries"><a href="#libraries">&para;</a> Libraries</h3>
+<p>
+  Each procedure in this SRFI is associated with multiple libraries:
+  at least one is the
+  library that contains the original specification of the procedure,
+  and another  is specific to this SRFI. Implementations are encouraged
+  to have the same implementation from procedures exported from both
+  libraries: for example, <code>list-copy</code> from
+  <code>(scheme base)</code> should be the same as the one exported
+  from <code>(srfi ### base)</code>.
+</p>
+
+<h3 id="editorial"><a href="#editorial">&para;</a> Editorial conventions</h3>
+<p>
+  Square brackets [] are used to denote a group of arguments that are
+  optional, but all arguments must be present or absent. If one pair of
+  square brackets are nested in another pair, then the nested pair is
+  optional even when the other arguments are supplied.
+</p>
+
+<h3 id="procedures"><a href="#procedures">&para;</a> Procedures</h3>
+
+<div class="feature" id="list-copy">
+<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<code class="signature">(<a href="#list-copy">list-copy</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<p>
+  If neither <var>start</var> or <var>end</var> are supplied, then
+  this procedure returns
+  an newly allocated copy of the sequence of pairs at the
+  start of <var>im-list</var>.  If <var>im-list</var> is an improper list,
+  so is the result, and the final cdrs are the same in the sense of
+  eqv?. An <var>im-list</var> which is not a list is returned unchanged.
+  It is an error if <var>im-list</var> is circular.
+</p>
+
+<p>
+  If <var>start</var> but not <var>end</var> is supplied, this procedure
+  is equivalent to <code>(list-copy (list-tail <var>im-list</var> <var>start</var>))</code>.
+</p>
+
+<p>
+  If both <var>start</var> and <var>end</var> are supplied, then the
+  <var>start</var>th pair to the <var>end</var>th pair are copied, and
+  the list is terminated with an empty list.
+</p>
+
+<p>
+  In any case, only the pairs themselves are copied; the cars of the
+  pairs in the result are the same (in the sense of <code>eqv?</code>) as
+  the cars of the corresponding pairs that were copied from <var>im-list</var>.
+</p>
+
+<pre class="example">
+<code class="example-code"
+>(list-copy '(1 2 3 4 5 . 6))</code
+> <span class="evals-side"> ⇒ <span class="evals-to">(1 2 3 4 5 . 6)</span></span>
+<code class="example-code"
+>(list-copy '(1 2 3 4 5 . 6) 2)</code
+> <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5 . 6)</span></span>
+<code class="example-code"
+>(list-copy '(1 2 3 4 5 . 6) 2 5)</code
+> <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5)</span></span>
+<code class="example-code"
+>(list-copy '(1 2 3 4 5) 2 5)</code 
+> <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5)</span></span>
+<code class="example-code"
+>(list-copy #1&#61;'(1 2 #1#) 1 8)</code
+><span class="evals-side"> ⇒ <span class="evals-to">(2 1 2 1 2 1 2)</span></span>
+</pre>
+
+<div class="feature" id="list-to-string">
+<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<code class="signature">(<a href="#list-to-string">list->string</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<p>
+  It is an error if the elements of <var>im-list</var> are not
+  characters.
+</p>
+
+<p>
+  Returns a newly allocated string formed from the elements of
+  <var>im-list</var> between <var>start</var> and <var>end</var>.
+  Order is preserved. This procedure and <code>string->list</code>
+  are inverses in the following sense for each appropriate
+  <var>string</var>, <var>list</var>, <var>start</var>, and
+  <var>end</var>:
+</p>
+
+<pre class="example">
+<code class="example-code"
+>(equal? (list->string (string->list <var>string</var>
+                                    <var>start</var>
+                                    <var>end</var>))
+        (substring <var>string</var> <var>start</var> <var>end</var>))</code
+> <span class="evals-side"> ⇒ <span class="evals-to">#t</span></span
+></pre>
+
+<pre class="example">
+<code class="example-code"
+>(equal? (string->list (list->string <var>list</var>
+                                    <var>start</var>
+                                    <var>end</var>))
+        (list-copy <var>list</var> <var>start</var> <var>end</var>))</code
+> <span class="evals-side"> ⇒ <span class="evals-to">#t</span></span>
+</pre>
+
+<div class="feature" id="list-to-vector">
+<span class="category">(scheme base)<br/>(srfi ### base)<br />procedure</span>
+<code class="signature">(<a href="#list-to-vector">list->vector</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<p>
+  Returns a newly created vector initialized to the elements of
+  <var>im-list</var> between <var>start</var> and <var>end</var>.
+</p>
+
+<pre class="example">
+<code class="example-code">(list->vector '(dah dah didah) 1 2)</code
+> <span class="evals-side"> ⇒ <span class="evals-to">#(dah)</span></span>
+<code class="example-code">(list->vector '(do be do be doo . dah) 2 5)</code
+> <span class="evals-side"> ⇒ <span class="evals-to">#(do be doo)</span></span>
+</pre>
+
+<h4 id="srfi-procedures"><a href="#srfi-procedures">&para;</a>
+   <span class="report-name">R<sup>7</sup>RS-Large</span> SRFI procedures</h4>
+
+<p>
+  These procedures are exported from SRFI libraries that are included
+  in <span class="report-name">R<sup>7</sup>RS-Large</span>.
+  If an implementation does not support a certain SRFI, then the
+  corresponding <code>(srfi ###)</code> sublibrary is not required.
+</p>
+
+<p>
+  Not all procedures that convert from list representations are included.
+  Procedures that operate on assocation lists and lists that are treated
+  as sets are excluded, because those lists are usually unordered.
+</p>
+
+<div class="feature" id="list-to-stream">
+<span class="category">(srfi 41)<br/>(srfi ### 41)<br />procedure</span>
+<code class="signature">(<a href="#list-to-stream">list->stream</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<div class="feature" id="list-to-ideque">
+<span class="category">(srfi 134)<br/>(srfi ### 134)<br />procedure</span>
+<code class="signature">(<a href="#list-to-ideque">list->ideque</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<div class="feature" id="list-to-generator">
+<span class="category">(srfi 158)<br />(srfi ### 158)<br />procedure</span>
+<code class="signature">(<a href="list-to-generator">list->generator</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<div class="feature" id="list-to-number-vector">
+<span class="category">
+(srfi 160 ⟨<var>type</var>⟩)<br />
+(srfi 160 base)<br />
+(srfi ### 160 ⟨<var>type</var>⟩)<br />
+(srfi ### 160 base)
+<br />procedure</span>
+<code class="signature">(<a href="#list-to-number-vector">list->⟨<var>type</var>⟩vector</a>
+                         <var>im-list</var>
+                         [<var>start</var>
+                          [<var>end</var>]])
+</code>
+</div>
+
+<h2 id="implementation"><a href="#implementation">&para;</a> Implementation</h2>
+
+<p>
+  A portable <span class="report-name">R<sup>7</sup>RS</span>
+  is available in the SRFI repository. It has been tested to work in
+  Chibi Scheme 0.11.0. Implementers are encouraged to align the behavior
+  of the list conversion procedures in all specified libraries.
+</p>
+
+<h2 id="acknowledgements"><a href="#acknowledgements">&para;</a> Acknowledgements</h2>
+
+<p>
+  Thanks to those in Working Group 2 for discussing the semantics of
+  these procedures.
+  Topics related to this SRFI were discussed on the
+  <span class="report-name">R<sup>7</sup>RS-Large</span> issue tracker
+  (<a href="https://codeberg.org/scheme/r7rs/issues/341">#341</a>,
+   <a href="https://codeberg.org/scheme/r7rs/issues/206">#206</a>)
+  and in meetings on
+  <a href="https://codeberg.org/scheme/r7rs/wiki/Minutes+2026-04-30.-">April 30<sup>th</sup>, 2026</a>
+  and
+  <a href="https://codeberg.org/scheme/r7rs/wiki/Minutes+2026-05-19.-">May 19<sup>th</sup>, 2026</a>.
+</p>
+
+
+<h2 id="copyright"><a href="#copyright">&para;</a> Copyright</h2>
+<p>&copy; 2026 Peter McGoron.</p>
+
+<p>
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:</p>
+
+<p>
+  The above copyright notice and this permission notice (including the
+  next paragraph) shall be included in all copies or substantial
+  portions of the Software.</p>
+
+<p>
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.</p>
+
+  <hr>
+  <address>Editor: <a href="mailto:srfi-editors+at+srfi+dot+schemers+dot+org">Arthur A. Gleckler</a></address></body></html>
