@@ -174,7 +174,7 @@ a chain of pairs beyond this length.
 </p>
 
 <pre class="example">
-<code class="example-code">(list->vector '(1 2 3 4 5 . 6))</code> <span class="eval-side"> <span class="evals-side"> ⇒ <span class="evals-text">error</span></span>
+<code class="example-code">(list->vector '(1 2 3 4 5 . 6))</code> <span class="evals-side"> ⇒ <span class="evals-text">error</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2)</code> <span class="evals-side">⇒ <span class="evals-text">error</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
