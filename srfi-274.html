@@ -167,8 +167,8 @@ a chain of pairs beyond this length.
   This SRFI imposes a consistent method of dealing with improper lists
   for copying and conversion procedures.
   When <var>end</var> is supplied as an argument to a procedure,
-  <em>a dotted list is treated as if it was a proper list</em>: it
-  is treated as if its final cdr was the empty list, and not some non-list
+  <em>a dotted list is treated as if it were a proper list</em>: it
+  is treated as if its final <code>cdr</code> were the empty list, and not some non-list
   object. This treatment does not extend to situations where <var>end</var>
   is not supplied. For example:
 </p>
@@ -288,9 +288,9 @@ a chain of pairs beyond this length.
 </div>
 
 <p>
-  If neither <var>start</var> or <var>end</var> are supplied, then
+  If neither <var>start</var> nor <var>end</var> is supplied, then
   this procedure returns
-  an newly allocated copy of the sequence of pairs at the
+  a newly allocated copy of the sequence of pairs at the
   start of <var>im-list</var>.  If <var>im-list</var> is an improper list,
   so is the result, and the final cdrs are the same in the sense of
   eqv?. An <var>im-list</var> which is not a list is returned unchanged.
@@ -395,11 +395,11 @@ a chain of pairs beyond this length.
 </pre>
 
 <h4 id="srfi-procedures"><a href="#srfi-procedures">&para;</a>
-   <span class="report-name">R<sup>7</sup>RS-Large</span> SRFI procedures</h4>
+   <span class="report-name">R<sup>7</sup>RS Large</span> SRFI procedures</h4>
 
 <p>
   These procedures are exported from SRFI libraries that are included
-  in <span class="report-name">R<sup>7</sup>RS-Large</span>.
+  in <span class="report-name">R<sup>7</sup>RS Large</span>.
   If an implementation does not support a certain SRFI, then the
   corresponding <code>(srfi 274)</code> sublibrary is not required.
 </p>
@@ -468,7 +468,7 @@ a chain of pairs beyond this length.
   Thanks to those in Working Group 2 for discussing the semantics of
   these procedures.
   Topics related to this SRFI were discussed on the
-  <span class="report-name">R<sup>7</sup>RS-Large</span> issue tracker
+  <span class="report-name">R<sup>7</sup>RS Large</span> issue tracker
   (<a href="https://codeberg.org/scheme/r7rs/issues/341">#341</a>,
    <a href="https://codeberg.org/scheme/r7rs/issues/206">#206</a>)
   and in meetings on
