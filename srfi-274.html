@@ -41,6 +41,8 @@ SPDX-License-Identifier: MIT
 
             .example-code {
               background-color: var(--background-color);
+              display: inline-block;
+              min-width: 46ch;
             }
 
             @media (prefers-color-scheme: dark) {
@@ -72,7 +74,6 @@ SPDX-License-Identifier: MIT
              text-align: center;
             }
             .evals-side {
-              float: right;
             }
 
             .evals-text {
@@ -175,7 +176,7 @@ a chain of pairs beyond this length.
 </p>
 
 <pre class="example">
-<code class="example-code">(list->vector '(1 2 3 4 5 . 6))</code> <span class="evals-side"> ⇒ <span class="evals-text">error</span></span>
+<code class="example-code">(list->vector '(1 2 3 4 5 . 6))</code> <span class="evals-side">⇒ <span class="evals-text">error</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2)</code> <span class="evals-side">⇒ <span class="evals-text">error</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5 . 6) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
 <code class="example-code">(list->vector '(1 2 3 4 5) 2 5)</code> <span class="evals-side">⇒ <span class="evals-to">#(3 4 5)</span></span>
@@ -194,8 +195,9 @@ a chain of pairs beyond this length.
   (case-lambda
     ((lst) (proc lst))
     ((lst start) (proc (drop lst start)))
-    ((lst start end) (proc (take (drop lst start)
-                                 (- end start))))))
+    ((lst start end)
+     (proc (take (drop lst start)
+		 (- end start))))))
 </pre>
 
 <p>
@@ -330,7 +332,7 @@ a chain of pairs beyond this length.
 > <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5)</span></span>
 <code class="example-code"
 >(list-copy #1&#61;'(1 2 #1#) 1 8)</code
-><span class="evals-side"> ⇒ <span class="evals-to">(2 1 2 1 2 1 2)</span></span>
+> <span class="evals-side"> ⇒ <span class="evals-to">(2 1 2 1 2 1 2)</span></span>
 </pre>
 
 <div class="feature" id="list-to-string">
