@@ -30,6 +30,15 @@ SPDX-License-Identifier: MIT
               font-size: 12pt;
             }
 
+            .boxed {
+              border: 1px solid;
+              padding-top: 6pt;
+              padding-bottom: 6pt;
+              padding-left: 6pt;
+              padding-right: 12pt;
+              overflow: auto;
+            }
+
             .example {
               border: 1px solid;
               padding-top: 6pt;
@@ -107,7 +116,8 @@ SPDX-License-Identifier: MIT
 <p>
   A set of modest extensions to list conversion and list copying procedures
   is proposed that aligns them with other conversion and copying procedures
-  and allows for some operations on improper and circular lists.
+  and allows for some operations on dotted and circular lists (collectively
+  called improper lists).
   Authors of further SRFIs that include list conversion procedures are
   encouraged to align their behavior with the behavior in this SRFI.
 </p>
@@ -134,17 +144,17 @@ SPDX-License-Identifier: MIT
   to other data types without explicit loops or intermediate allocations.
   But by allowing a selection of a portion of a list, the <var>start</var>
   and <var>end</var> arguments run into specification issues when passed
-  dotted lists. How should they be handled?
+  improper lists. How should they be handled?
 </p>
 
 <p>
-  Finite improper lists are an artefact of the representation of lists
+  Improper lists are an artefact of the representation of lists
   as cons cells. They are odd corner cases that many procedures will
   probably struggle with. But they have their uses, particularly for
   lazy computation, such as
   <a href="https://r7rs.org/large/fascicles/macro/1/syntax-objects.html#_entry_unwrap-syntax">hygienic context propagation</a>
   and
-  <a href="https://srfi.schemers.org/srfi-127/">odd sequences</a>.
+  <a href="https://srfi.schemers.org/srfi-127/">odd streams</a>.
 </p>
 
 <p>
@@ -167,11 +177,14 @@ a chain of pairs beyond this length.
 
 <p>
   This SRFI imposes a consistent method of dealing with improper lists
-  for copying and conversion procedures.
-  When <var>end</var> is supplied as an argument to a procedure,
-  <em>a dotted list is treated as if it were a proper list</em>: it
-  is treated as if its final <code>cdr</code> were the empty list, and not some non-list
-  object. This treatment does not extend to situations where <var>end</var>
+  for copying and conversion procedures:
+  when <var>end</var> is supplied as an argument to a procedure,
+  the procedure never inspects the cdr of <var>end</var>. This means
+  that a dotted list copied to <var>end</var>th pair
+  (whose cdr is neither a pair or the empty list)
+  is the same as copying the list except that the
+  <var>end</var>th pair's cdr is replaced with the empty list.
+  This treatment does not extend to situations where <var>end</var>
   is not supplied. For example:
 </p>
 
@@ -204,7 +217,7 @@ a chain of pairs beyond this length.
   where <code>drop</code> and <code>take</code> are from
   <a href="https://srfi.schemers.org/srfi-1/">SRFI 1</a>.
   Implementations are encouraged to implement these procedures without
-  the extra allocations entailed by <code>drop</code>.
+  the extra allocations entailed by <code>take</code>.
 </p>
 
 <h2 id="specification"><a href="#specification">&para;</a> Specification</h2>
@@ -221,6 +234,11 @@ a chain of pairs beyond this length.
   final cdr of an improper list is replaced with the empty list,
   then the length of the resulting proper list is equal to the length of
   the improper list.
+</p>
+
+<p>
+  A finite improper list is called a <dfn>dotted list</dfn>. An infinite
+  improper list is called a <dfn>circular list</dfn>.
 </p>
 
 <p>
@@ -243,7 +261,7 @@ a chain of pairs beyond this length.
 </p>
 
 <p class="centered">
-0 ≤ <var>start</var> ≤ <var>end</var> ≤ <var>length</var>
+0 ≤ <var>start</var> ≤ <var>end</var> ≤ <var>length</var> and <var>start</var> < <var>length</var>
 </p>
 
 <p>where <var>length</var> is the length of <var>im-list</var>.</p>
@@ -294,7 +312,7 @@ a chain of pairs beyond this length.
   If neither <var>start</var> nor <var>end</var> is supplied, then
   this procedure returns
   a newly allocated copy of the sequence of pairs at the
-  start of <var>im-list</var>.  If <var>im-list</var> is an improper list,
+  start of <var>im-list</var>.  If <var>im-list</var> is a dotted list,
   so is the result, and the final cdrs are the same in the sense of
   eqv?. An <var>im-list</var> which is not a list is returned unchanged.
   It is an error if <var>im-list</var> is circular.
@@ -317,6 +335,16 @@ a chain of pairs beyond this length.
   the cars of the corresponding pairs that were copied from <var>im-list</var>.
 </p>
 
+<p class="boxed">
+  Note: The <span class="report-name">R<sup>7</sup>RS</span> and
+  <a href="https://srfi.schemers.org/srfi-1/">SRFI 1</a> specify that
+  this procedure copies dotted lists in a particular way. This behavior
+  has been preserved here for the sake of compatability with these two
+  specifications. However, if <var>end</var> is supplied, the cdr of the
+  final inspected pair is not inspected, so <code>list-copy</code> will
+  always return a proper list when <var>end</var> is supplied.
+</p>
+
 <pre class="example">
 <code class="example-code"
 >(list-copy '(1 2 3 4 5 . 6))</code
@@ -331,7 +359,7 @@ a chain of pairs beyond this length.
 >(list-copy '(1 2 3 4 5) 2 5)</code
 > <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5)</span></span>
 <code class="example-code"
->(list-copy #1&#61;'(1 2 #1#) 1 8)</code
+>(list-copy '#1&#61;(1 2 #1#) 1 8)</code
 > <span class="evals-side"> ⇒ <span class="evals-to">(2 1 2 1 2 1 2)</span></span>
 </pre>
 
@@ -401,8 +429,10 @@ a chain of pairs beyond this length.
    <span class="report-name">R<sup>7</sup>RS Large</span> SRFI procedures</h4>
 
 <p>
-  These procedures are exported from SRFI libraries that are included
+  These procedures are exported from SRFI libraries that are
+  currently included
   in <span class="report-name">R<sup>7</sup>RS Large</span>.
+  (That list is subject to change.)
   If an implementation does not support a certain SRFI, then the
   corresponding <code>(srfi 274)</code> sublibrary is not required.
 </p>
@@ -457,10 +487,10 @@ a chain of pairs beyond this length.
 <h2 id="implementation"><a href="#implementation">&para;</a> Implementation</h2>
 
 <p>
-  A portable <span class="report-name">R<sup>7</sup>RS</span> is
-  available in the
+  A portable <span class="report-name">R<sup>7</sup>RS</span>
+  implementation is available in the
   <a href="https://github.com/scheme-requests-for-implementation/srfi-274">SRFI
-  repository</a> It has been tested to work in Chibi Scheme
+  repository</a>. It has been tested to work in Chibi Scheme
   0.11.0. Implementers are encouraged to align the behavior of the
   list conversion procedures in all specified libraries.
 </p>
