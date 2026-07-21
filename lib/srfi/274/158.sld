@@ -11,7 +11,7 @@
         ((lst) (srfi-158:list->generator lst))
         ((lst start) (srfi-158:list->generator (list-tail lst start)))
         ((lst start end)
-         (argcheck! 'list->generator start end)
+         (argcheck! 'list->generator start end lst)
          (let ((lst (list-tail lst start)))
            (lambda ()
              (if (= start end)

@@ -47,7 +47,7 @@
         ((lst) (basic lst))
         ((lst start) (basic (list-tail lst start)))
         ((lst start end)
-         (argcheck! who start end)
+         (argcheck! who start end lst)
          (unfold (lambda (ignored seed)
                    (values (car seed) (cdr seed)))
                  (- end start)
