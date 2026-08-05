@@ -12,7 +12,7 @@
         ((lst) (srfi-134:list->ideque))
         ((lst start) (srfi-134:list->ideque (list-tail lst start)))
         ((lst start end)
-         (argcheck! lst start end)
+         (argcheck! 'list->ideque start end lst)
          (ideque-unfold (lambda (seed)
                           (= (vector-ref seed 1) end))
                         (lambda (seed)

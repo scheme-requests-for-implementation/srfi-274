@@ -12,7 +12,7 @@
         ((lst) (srfi-41:list->stream lst))
         ((lst start) (srfi-41:list->stream (list-tail lst start)))
         ((lst start end)
-         (argcheck! lst start end)
+         (argcheck! 'list->stream start end lst)
          (letrec ((loop (stream-lambda (lst start)
                         (if (= start end)
                             stream-null

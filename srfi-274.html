@@ -244,8 +244,10 @@ a chain of pairs beyond this length.
 
 <p>
   Any non-pair and non-null object is a zero-length improper list.
-  For clarity, the term <var>im-list</var> is used in argument lists
-  when an argument is a possibly improper list.
+  For clarity, the term <var>im-list</var> is used in argument lists when
+  an argument is a possibly improper list. The length of an argument
+  labeled <var>im-list</var> is the length of an improper list when it
+  is an improper list, and the length of a list if it is a list.
 </p>
 
 <h3 id="start-and-end-arguments"><a href="#start-and-end-arguments"
@@ -262,7 +264,7 @@ a chain of pairs beyond this length.
 </p>
 
 <p class="centered">
-0 ≤ <var>start</var> ≤ <var>end</var> ≤ <var>length</var> and <var>start</var> &lt; <var>length</var>
+0 ≤ <var>start</var> ≤ <var>end</var> ≤ <var>length</var>
 </p>
 
 <p>where <var>length</var> is the length of <var>im-list</var>.</p>
@@ -276,6 +278,12 @@ a chain of pairs beyond this length.
   Unless otherwise specified, it is an error to pass an improper
   list to a procedure without an explicit <var>end</var> argument.
   (In this SRFI, the only exception is <code>list-copy</code>.)
+</p>
+
+<p>
+  With the exception of <code>list-copy</code>, if <var>start</var>
+  is omitted, then it is assumed to be 0, and if <var>end</var> is
+  omitted, it is assumed to be the length of <var>im-list</var>.
 </p>
 
 <h3 id="libraries"><a href="#libraries">&para;</a> Libraries</h3>
@@ -360,7 +368,7 @@ a chain of pairs beyond this length.
 >(list-copy '(1 2 3 4 5) 2 5)</code
 > <span class="evals-side"> ⇒ <span class="evals-to">(3 4 5)</span></span>
 <code class="example-code"
->(list-copy '#1&#61;(1 2 #1#) 1 8)</code
+>(list-copy '#1&#61;(1 2 . #1#) 1 8)</code
 > <span class="evals-side"> ⇒ <span class="evals-to">(2 1 2 1 2 1 2)</span></span>
 </pre>
 
