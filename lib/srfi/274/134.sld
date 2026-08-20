@@ -9,7 +9,7 @@
   (begin
     (define list->ideque
       (case-lambda
-        ((lst) (srfi-134:list->ideque))
+        ((lst) (srfi-134:list->ideque lst))
         ((lst start) (srfi-134:list->ideque (list-tail lst start)))
         ((lst start end)
          (argcheck! 'list->ideque start end lst)
