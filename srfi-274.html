@@ -135,7 +135,7 @@ SPDX-License-Identifier: MIT
   such as <code>vector-copy</code> and <code>string->list</code> received
   optional <var>start</var> and <var>end</var> arguments. These arguments
   allow one to copy segments of the string/vector without having to write
-  an explicit loop for it.
+  an explicit loop.
 </p>
 
 <p>
@@ -144,9 +144,9 @@ SPDX-License-Identifier: MIT
   The <var>start</var> and <var>end</var> arguments are arguably more
   useful for lists, because they allow for conversion of circular lists
   to other data types without explicit loops or intermediate allocations.
-  But by allowing a selection of a portion of a list, the <var>start</var>
-  and <var>end</var> arguments run into specification issues when passed
-  improper lists. How should they be handled?
+  But if these procedures are allowed to select a portion of a list,
+  how should they interpret their start and end arguments when that list
+  is improper?
 </p>
 
 <p>
@@ -163,9 +163,9 @@ SPDX-License-Identifier: MIT
   The common implementation of many procedures, such as
   <code>list-ref</code>, <code>list-tail</code>, and <code>map</code>
   (when operating on certain sets of multiple arguments),
-  work fine with improper lists. Critical here is that these procedures
-  only inspect a portion of a linked list: they don't care if list is
-  proper after those elements. An example of this behavior is the
+  works fine with improper lists. Critical here is that these procedures
+  only inspect a portion of a linked list: they don't care if the list is
+  proper after those elements. Examples of this behavior are given in the
   “implementation responsibilities” section of many procedures in the
   <span class="report-name">R<sup>6</sup>RS</span>, which include
   statements like
@@ -182,7 +182,7 @@ a chain of pairs beyond this length.
   for copying and conversion procedures:
   when <var>end</var> is supplied as an argument to a procedure,
   the procedure never inspects the cdr of <var>end</var>. This means
-  that a dotted list copied to <var>end</var>th pair
+  that copying a dotted list to the <var>end</var>th pair
   (whose cdr is neither a pair or the empty list)
   is the same as copying the list except that the
   <var>end</var>th pair's cdr is replaced with the empty list.
@@ -228,7 +228,7 @@ a chain of pairs beyond this length.
 
 <p>
   An <dfn>improper list</dfn> is a sequence of zero or more cons cells
-  that do not end in an empty list.
+  that does not end in an empty list.
   The <dfn>elements of an improper list</dfn> are the cars of the
   pairs of that sequence of cons cells.
   The <dfn>length</dfn> of an improper list is the number of cons cells
@@ -244,7 +244,7 @@ a chain of pairs beyond this length.
 </p>
 
 <p>
-  Any non-pair and non-null object is a zero-length improper list.
+  Every non-pair and non-null object is a zero-length improper list.
   For clarity, the term <var>im-list</var> is used in argument lists when
   an argument is a possibly improper list. The length of an argument
   labeled <var>im-list</var> is the length of an improper list when it
@@ -282,7 +282,7 @@ a chain of pairs beyond this length.
 </p>
 
 <p>
-  With the exception of <code>list-copy</code>, if <var>start</var>
+  Except in the case of <code>list-copy</code>, if <var>start</var>
   is omitted, then it is assumed to be 0, and if <var>end</var> is
   omitted, it is assumed to be the length of <var>im-list</var>.
 </p>
@@ -302,9 +302,9 @@ a chain of pairs beyond this length.
 <h3 id="editorial"><a href="#editorial">&para;</a> Editorial conventions</h3>
 <p>
   Square brackets [] are used to denote a group of arguments that are
-  optional, but all arguments must be present or absent. If one pair of
-  square brackets are nested in another pair, then the nested pair is
-  optional even when the other arguments are supplied.
+  optional, but all arguments in them must be present or absent. If one
+  pair of square brackets is nested in another pair, then the nested
+  pair is optional even when the other arguments are supplied.
 </p>
 
 <h3 id="procedures"><a href="#procedures">&para;</a> Procedures</h3>
@@ -330,13 +330,13 @@ a chain of pairs beyond this length.
 
 <p>
   If <var>start</var> but not <var>end</var> is supplied, this procedure
-  is equivalent to <code>(list-copy (list-tail <var>im-list</var> <var>start</var>))</code>.
+  is equivalent to <code>(list-copy (drop <var>im-list</var> <var>start</var>))</code>.
 </p>
 
 <p>
   If both <var>start</var> and <var>end</var> are supplied, then the
-  <var>start</var>th pair to the <var>end</var>th pair are copied, and
-  the list is terminated with an empty list.
+  pairs between <var>start</var> and <var>end</var> are copied, and
+  the returned list is terminated with an empty list.
 </p>
 
 <p>
@@ -424,7 +424,7 @@ a chain of pairs beyond this length.
 </div>
 
 <p>
-  Returns a newly created vector initialized to the elements of
+  Returns a newly allocated vector initialized to the elements of
   <var>im-list</var> between <var>start</var> and <var>end</var>.
 </p>
 
