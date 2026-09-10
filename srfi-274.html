@@ -8,6 +8,10 @@ SPDX-License-Identifier: MIT
     <meta charset="utf-8">
     <title>SRFI 274: Extended List Conversion Procedures</title>
     <style>
+            table {
+              border: 1px solid;
+              margin-bottom: 12pt;
+            }
             @media (prefers-color-scheme: light) {
               :root {
                 --background-color: white;
@@ -15,9 +19,48 @@ SPDX-License-Identifier: MIT
                 --text-color: black;
                 --visited-link-color: purple;
               }
-              code {
-                  background-color: #dedede;
+
+              pre {
+                  border: 1px solid;
+                  padding: 7.5px;
+                  background-color: #f0f0f0;
+                  margin-bottom: 18pt;
               }
+
+              code {
+                  background-color: #f0f0f0;
+              }
+            }
+
+            @media (prefers-color-scheme: dark) {
+              :root {
+                --background-color: #161616;
+                --link-color: SkyBlue;
+                --text-color: #e0e0e0;
+                --visited-link-color: Orchid;
+              }
+
+              pre {
+                  border: 1px solid;
+                  padding: 7.5px;
+                  background-color: #2b2b2b;
+                  margin-bottom: 18pt;
+              }
+
+              code {
+                background-color: #2b2b2b;
+              }
+            }
+
+    .never-break-inside > a {
+      white-space: nowrap;
+    }
+    .never-break-inside > code {
+      white-space: nowrap;
+    }
+
+            .normal-font {
+              font-family: sans-serif;
             }
 
             .feature {
@@ -37,34 +80,19 @@ SPDX-License-Identifier: MIT
               padding-left: 6pt;
               padding-right: 12pt;
               overflow: auto;
+              margin-bottom: 6pt;
             }
 
-            .example {
-              border: 1px solid;
-              padding-top: 6pt;
-              padding-bottom: 6pt;
-              padding-left: 6pt;
-              padding-right: 12pt;
-              overflow: auto;
+            .boxed-tag {
+              font-style: italic;
             }
 
             .example-code {
-              background-color: var(--background-color);
+              /* background-color: var(--background-color); */
               display: inline-block;
               min-width: 46ch;
             }
 
-            @media (prefers-color-scheme: dark) {
-              :root {
-                --background-color: #161616;
-                --link-color: SkyBlue;
-                --text-color: #e0e0e0;
-                --visited-link-color: Orchid;
-              }
-              code {
-                background-color: #484848;
-              }
-            }
             a {
               color: var(--link-color);
             }
