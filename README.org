@@ -11,7 +11,7 @@ keywords: [[https://srfi.schemers.org/?keywords=data-structure][Data Structure]]
 
 This repository hosts [[https://srfi.schemers.org/srfi-274/][SRFI 274]]: Extended List Conversion Procedures, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
 
-This SRFI is in /draft/ status.
+This SRFI is in /final/ status.
 See also [[/srfi-1/][SRFI 1: List Library]].
 The full documentation for this SRFI can be found in the [[https://srfi.schemers.org/srfi-274/srfi-274.html][SRFI Document]].
 
